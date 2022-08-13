@@ -1,50 +1,34 @@
 #include "sort.h"
 
 /**
- * shell_sort - sort an array of integers in ascending order
- * @array: array of integers
- * @size: size of array of integers
+ * shell_sort - shell Sort Algrithme using Knuth sequence
+ * @array: Array to be Sorted
+ * @size:size of the array
+ * Return:Sorted Array (void)
  */
 void shell_sort(int *array, size_t size)
 {
-	size_t gap;
+	int n = 1, i, j;
+	int tmp;
 
-	if (size <= 1 || array == NULL)
+	if (!array || !size || size < 2)
 		return;
-
-	gap = 1;
-	while ((gap * 3 + 1) < size)
-		gap = gap * 3 + 1;
-
-	for (; gap > 0; gap /= 3)
+	while (n < (int)size / 3)
+		n = n * 3 + 1;
+	while (n > 0)
 	{
-		insertion_sort(array, (int)size, (int)gap);
-		print_array(array, size);
-	}
-}
-
-/**
- * insertion_sort - sort an array of integers based on a gap for shell sort
- * @array: array of integers
- * @size: size of array of integers
- * @diff: gap given by shell sort
- */
-void insertion_sort(int *array, int size, int diff)
-{
-	int i, j, hold;
-
-	for (i = diff; i < size; i++)
-	{
-		for (j = i; j - diff >= 0; j -= diff)
+		for (i = n; i < (int)size; i++)
 		{
-			if (array[j] < array[j - diff])
+			tmp = array[i];
+			j = i;
+			while (j > (n - 1) && array[j - n] >= tmp)
 			{
-				hold = array[j];
-				array[j] = array[j - diff];
-				array[j - diff] = hold;
+				array[j] = array[j - n];
+				j -= n;
 			}
-			else
-				break;
+			array[j] = tmp;
 		}
+		n = n / 3;
+		print_array(array, size);
 	}
 }
