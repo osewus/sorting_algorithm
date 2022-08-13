@@ -1,91 +1,70 @@
 #include "sort.h"
+/**
+ * check_tree - swiftdown check
+ * @array: pointer to array
+ * @size: size of the pointer
+ * @size_init: original size of the array
+ * @i: index as a root of the tree
+ *
+**/
+void check_tree(int *array, size_t size_init, size_t size, size_t i)
+{
 
-/**
- * swap - swap two vars in array
- * @A: array
- * @a: 1st num
- * @b: 2nd num
- * @size: size of array
- */
-void swap(int *A, int a, int b, size_t size)
-{
-	int tmp;
+	int n, branch1, branch2;
+	size_t br1, br2;
 
-	tmp = A[a];
-	A[a] = A[b];
-	A[b] = tmp;
-	print_array(A, size);
-}
-/**
- * swim - routine to build heap
- * @A: int* array being sorted
- * @i: index to swim
- * @size: size of the array
- */
-void swim(int *A, int i, size_t size)
-{
-	while (A[i] > A[(i - 1) / 2])
+	br1 = i * 2 + 1;
+	br2 = br1 + 1;
+	branch1 = array[br1];
+	branch2 = array[br2];
+	if (((br1 < size) && (br2 < size) &&
+		(branch1 >= branch2 && branch1 > array[i]))
+		|| ((br1 == size - 1) && branch1 > array[i]))
 	{
-		if (A[i] < A[((i - 1) / 2) * 2 + 1] || A[i] < A[((i - 1) / 2) * 2 + 2])
-			break;
-		swap(A, i, (i - 1) / 2, size);
-		i = (i - 1) / 2;
+		n = array[i];
+		array[i] = branch1;
+		array[br1] = n;
+		print_array(array, size_init);
 	}
-}
-/**
- * sink - routine to place items into place in heap
- * @A: int *array being sorted
- * @i: index to sink
- * @N: size of array
- * @size: size of the full array
- */
-void sink(int *A, int i, int N, size_t size)
-{
-	while (N >= (i * 2) + 1)
+	else if ((br1 < size) && (br2 < size) &&
+		(branch2 > branch1 && branch2 > array[i]))
 	{
-		if (i * 2 + 2 <= N && (A[i] < A[i * 2 + 1] || A[i] < A[i * 2 + 2]))
-		{
-			if (A[i * 2 + 1] > A[i * 2 + 2])
-			{
-				swap(A, i, i * 2 + 1, size);
-				i = i * 2 + 1;
-			}
-			else
-			{
-				swap(A, i, i * 2 + 2, size);
-				i = i * 2 + 2;
-			}
-		}
-		else if (i * 2 + 1 <= N && A[i] < A[i * 2 + 1])
-		{
-			swap(A, i, i * 2 + 1, size);
-			i = i * 2 + 1;
-		}
-		else
-			break;
+		n = array[i];
+		array[i] = branch2;
+		array[br2] = n;
+		print_array(array, size_init);
 	}
+	if (br1 < size - 1)
+		check_tree(array, size_init, size, br1);
+	if (br2 < size - 1)
+		check_tree(array, size_init, size, br2);
 }
 /**
- * heap_sort - heapsort with sinkdown method
- * @array: int* array to sort
- * @size: size of the array
- */
+ * heap_sort - sorts an array of integers
+ * in ascending order using the Heap
+ * sort algorithm
+ * @array: pointer to array
+ * @size: size of the pointer
+ *
+**/
 void heap_sort(int *array, size_t size)
 {
-	int i, N;
+	size_t i, size_init = size;
+	int n;
 
-	for (i = size - 1; i > 0; i--)
+	if (!array)
+		return;
+	for (i = 0; i < size / 2 ; i++)
 	{
-		if (array[i] > array[(i - 1) / 2])
-		{
-			swim(array, i, size);
-			sink(array, i, size, size);
-		}
+		check_tree(array, size_init, size, size / 2 - 1 - i);
 	}
-	for (N = size - 1; N > 0;)
+	for (i = 0; i < size_init - 1; i++)
 	{
-		swap(array, 0, N, size);
-		N--;
-		sink(array, 0, N, size);
+		n = array[0];
+		array[0] = array[size - 1 - i];
+		array[size - 1 - i] = n;
+		print_array(array, size_init);
+		check_tree(array, size_init, size - i - 1, 0);
 	}
+
 }
